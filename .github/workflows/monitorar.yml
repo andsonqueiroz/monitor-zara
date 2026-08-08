@@ -1,0 +1,38 @@
+name: Monitorar Estoque Zara
+
+on:
+  schedule:
+    - cron: '*/15 * * * *' # Roda a cada 15 minutos
+  workflow_dispatch: # Permite rodar clicando em um botão
+
+jobs:
+  monitorar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Instalar dependências
+        run: |
+          pip install playwright
+          playwright install chromium
+
+      - name: Executar robô
+        env:
+          EMAIL_REMETENTE: ${{ secrets.EMAIL_REMETENTE }}
+          EMAIL_SENHA: ${{ secrets.EMAIL_SENHA }}
+          EMAIL_DESTINO: ${{ secrets.EMAIL_DESTINO }}
+        run: python monitor.py
+
+      - name: Salvar estado (Evitar spam de e-mail)
+        run: |
+          git config --global user.name "Robô da Zara"
+          git config --global user.email "bot@github.com"
+          git add estado.txt || echo "Arquivo estado.txt ainda não existe, será criado."
+          git commit -m "Atualiza estado do estoque" || echo "Sem mudanças no estoque"
+          git push
