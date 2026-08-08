@@ -10,16 +10,27 @@ import time
 URL_ZARA = "https://www.zara.com/br/pt/sueter-de-trico-relaxed-fit-p04231416.html?v1=496052877&v2=2510635"
 TAMANHO = "M"
 
-# Agora temos Remetente (quem envia) e Destino (quem recebe)
 EMAIL_REMETENTE = os.environ.get("EMAIL_REMETENTE")
 EMAIL_SENHA = os.environ.get("EMAIL_SENHA")
 EMAIL_DESTINO = os.environ.get("EMAIL_DESTINO")
 
 def main():
+    # 1. ACESSO INVISÍVEL (COM MODO STEALTH ATIVADO)
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        page = browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36")
-        page.goto(URL_ZARA, wait_until="domcontentloaded")
+        # Colocamos um tamanho de tela padrão de PC para parecer mais real
+        page = browser.new_page(
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            viewport={"width": 1920, "height": 1080}
+        )
+        
+        # INJETA A INVISIBILIDADE PARA ENGANAR A AKAMAI
+        stealth_sync(page) 
+        
+        # Espera até que todo o tráfego de rede pare (garante que o JS carregou)
+        page.goto(URL_ZARA, wait_until="networkidle") 
+        time.sleep(3) # Aguarda 3 segundos extras como um humano faria
+        
         html = page.content()
         browser.close()
 
