@@ -1,5 +1,4 @@
 from playwright.sync_api import sync_playwright
-from playwright_stealth import stealth_sync
 import re
 import json
 import smtplib
@@ -15,21 +14,25 @@ EMAIL_SENHA = os.environ.get("EMAIL_SENHA")
 EMAIL_DESTINO = os.environ.get("EMAIL_DESTINO")
 
 def main():
-    # 1. ACESSO INVISÍVEL (COM MODO STEALTH ATIVADO)
+    # 1. ACESSO INVISÍVEL (NATIVO SEM BIBLIOTECA EXTERNA)
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        # Colocamos um tamanho de tela padrão de PC para parecer mais real
-        page = browser.new_page(
+        # A mágica acontece nesta linha abaixo (args):
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--disable-blink-features=AutomationControlled"] 
+        )
+        
+        # Criamos o contexto com o disfarce de tamanho de tela e user-agent
+        context = browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
             viewport={"width": 1920, "height": 1080}
         )
         
-        # INJETA A INVISIBILIDADE PARA ENGANAR A AKAMAI
-        stealth_sync(page) 
+        page = context.new_page()
         
-        # Espera até que todo o tráfego de rede pare (garante que o JS carregou)
+        # Espera a página carregar tudo e dá o delay humano
         page.goto(URL_ZARA, wait_until="networkidle") 
-        time.sleep(3) # Aguarda 3 segundos extras como um humano faria
+        time.sleep(3) 
         
         html = page.content()
         browser.close()
