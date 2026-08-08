@@ -1,9 +1,11 @@
 from playwright.sync_api import sync_playwright
+from playwright_stealth import stealth_sync
 import re
 import json
 import smtplib
 import os
 from email.mime.text import MIMEText
+import time
 
 URL_ZARA = "https://www.zara.com/br/pt/sueter-de-trico-relaxed-fit-p04231416.html?v1=496052877&v2=2510635"
 TAMANHO = "M"
