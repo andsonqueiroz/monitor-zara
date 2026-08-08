@@ -28,7 +28,7 @@ jobs:
           EMAIL_REMETENTE: ${{ secrets.EMAIL_REMETENTE }}
           EMAIL_SENHA: ${{ secrets.EMAIL_SENHA }}
           EMAIL_DESTINO: ${{ secrets.EMAIL_DESTINO }}
-        run: python monitor.py
+        run: python -u monitor.py
 
       - name: Salvar estado (Evitar spam de e-mail)
         run: |
