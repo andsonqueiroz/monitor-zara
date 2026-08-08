@@ -19,7 +19,7 @@ jobs:
 
       - name: Instalar dependências
         run: |
-          pip install playwright
+          pip install playwright playwright-stealth
           playwright install chromium
 
       - name: Executar robô
