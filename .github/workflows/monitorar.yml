@@ -2,7 +2,7 @@ name: Monitorar Estoque Zara
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Roda a cada 15 minutos
+    - cron: '*/5 * * * *' # Roda a cada 5 minutos
   workflow_dispatch: # Permite rodar clicando em um botão
 
 jobs:
