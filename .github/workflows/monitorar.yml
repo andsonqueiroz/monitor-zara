@@ -36,4 +36,5 @@ jobs:
           git config --global user.email "bot@github.com"
           git add estado.txt || echo "Arquivo estado.txt ainda não existe, será criado."
           git commit -m "Atualiza estado do estoque" || echo "Sem mudanças no estoque"
+          git pull --rebase origin main
           git push
